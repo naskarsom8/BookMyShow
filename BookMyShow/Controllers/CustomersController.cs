@@ -1,4 +1,5 @@
 ﻿using BookMyShow.Models;
+using BookMyShow.ViewModels;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -20,6 +21,39 @@ namespace BookMyShow.Controllers
         {
             _context.Dispose();
         }
+
+        public ActionResult CustomerForm()
+        {
+            var membershipTypes = _context.MembershipTypes.ToList();
+            var viewModel = new CustomerFormViewModel
+            {
+                MembershipTypes = membershipTypes
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Customer customer)
+        {
+            if (customer.Id == null || customer.Id == 0)
+                _context.Customers.Add(customer);
+            else
+            {
+                var customerInDb = _context.Customers.Single(c => c.Id == customer.Id);
+                
+                ////This method has loop holes do not use it.
+                ////even with MS offical workaround followed after , below.
+                //TryUpdateModel(customerInDb, new string[] { "Name", "Email" });
+
+                customerInDb.Name = customer.Name;
+                customerInDb.BirthDate = customer.BirthDate;
+                customerInDb.MembershipTypeId = customer.MembershipTypeId;
+                customerInDb.IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter;
+
+            }
+            _context.SaveChanges();
+            return RedirectToAction("CustomerForm","Customers");
+        }
         // GET: Customers
         public ActionResult Index()
         {
@@ -38,6 +72,24 @@ namespace BookMyShow.Controllers
             //    return Content("We don't have any customer with that Id.");
             //else
                 return View(customer);
+        }
+
+
+        public ActionResult Edit(int id)
+        {
+            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
+
+            if(customer == null)
+            {
+                return HttpNotFound();
+            }
+            var viewMoel = new CustomerFormViewModel
+            {
+                Customer = customer,
+                MembershipTypes = _context.MembershipTypes.ToList()
+            };
+            return View("CustomerForm", viewMoel);
+            
         }
 
     }
