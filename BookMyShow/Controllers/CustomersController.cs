@@ -1,25 +1,38 @@
 ﻿using BookMyShow.Models;
-using BookMyShow.ViewModels;
-using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace BookMyShow.Controllers
 {
     public class CustomersController : Controller
     {
+        private ApplicationDbContext _context;
+
+        public CustomersController()
+        {
+            _context = new ApplicationDbContext();
+        }
+
+        //Properly disposing the dbContext object.
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
         // GET: Customers
         public ActionResult Index()
         {
-            var customer = GetCustomers();
+            //This is the eager loading method where the related types or 
+            //related tables are included along with the primary table using
+            //their relationship key or foreign key.
+            var customer = _context.Customers.Include(c => c.MembershipType).ToList();
            return View(customer);
         }
 
         public ActionResult Details(int? id)
         {
-            var customer = GetCustomers().SingleOrDefault(c => c.Id == id);
+            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
 
             //if (customer == null)
             //    return Content("We don't have any customer with that Id.");
@@ -27,13 +40,5 @@ namespace BookMyShow.Controllers
                 return View(customer);
         }
 
-        private IEnumerable<Customer> GetCustomers()
-        {
-            return new List<Customer>
-            {
-                new Customer{ Id = 1, Name = "John Wick"},
-                new Customer{Id = 2, Name = "John Rambo"}
-            };
-        }
     }
 }
