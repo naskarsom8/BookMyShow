@@ -1,0 +1,23 @@
+﻿@model BookMyShow.Models.Customer
+@{
+    ViewBag.Title = "Customer Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Customer Details</h2>
+@if (Model == null)
+{
+    <p>We don't have any customer with that Id.</p>
+    <div>
+        @Html.ActionLink("Back to Home", "Index")
+    </div>
+}
+else
+{
+    <h2>@Model.Name</h2>
+
+    <div>
+        @Html.ActionLink("Back to Home", "Index")
+    </div>
+
+}
