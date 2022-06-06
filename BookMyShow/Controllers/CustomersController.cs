@@ -33,7 +33,7 @@ namespace BookMyShow.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save(Customer customer)
+        public ActionResult Create(Customer customer)
         {
             if (customer.Id == null || customer.Id == 0)
                 _context.Customers.Add(customer);

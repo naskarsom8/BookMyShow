@@ -6,6 +6,9 @@
 
 
 <h2 >Movies</h2>
+<div>
+    <p>@Html.ActionLink("Add New Movie", "Movieform",null, new { @class="btn btn-primary"})</p>
+</div>
     <table class="table table-bordered table-hover">
         <tr>
             <th>Movie Name</th>
@@ -15,7 +18,7 @@
         {
     <tr>
         <td>
-            @Html.ActionLink(movie.Name, "Details", "Movies", new { id = movie.Id }, null)
+            @Html.ActionLink(movie.Name, "Edit", "Movies", new { id = movie.Id }, null)
         </td>
         <td>@movie.Genre.GenreType</td>
     </tr>
