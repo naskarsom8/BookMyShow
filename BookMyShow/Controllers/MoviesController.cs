@@ -47,17 +47,30 @@ namespace BookMyShow.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(Movie movie)
         {
+            if(!ModelState.IsValid)
+            {
+                var viewModel = new MovieFormViewModel(movie)
+                {
+                    Genres = _context.Genres.ToList()
+                };
+
+                return View("MovieForm", viewModel);
+            }
             if (movie.Id == 0)
+            {
+                movie.DateAdded = DateTime.Now;
                 _context.Movies.Add(movie);
+            }
             else
             {
                 var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
                 movieInDb.Name = movie.Name;
                 movieInDb.NumberInStock = movie.NumberInStock;
                 movieInDb.ReleaseDate = movie.ReleaseDate;
-                movieInDb.DateAdded = movie.DateAdded;
+                movieInDb.DateAdded = DateTime.Now;
                 movieInDb.GenreId = movie.GenreId;
             }
             _context.SaveChanges();
@@ -70,9 +83,8 @@ namespace BookMyShow.Controllers
             var movie = _context.Movies.Single(m => m.Id == id);
             if (movie == null)
                 return HttpNotFound();
-            var viewModel = new MovieFormViewModel
+            var viewModel = new MovieFormViewModel(movie)
             {
-                Movie = movie,
                 Genres = _context.Genres.ToList()
             };
             return View("MovieForm",viewModel);
